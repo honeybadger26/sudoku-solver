@@ -1,6 +1,6 @@
 import { GridPosition, SECTION_INDEXES, TGrid } from './types';
 
-const ALL_NUMBERS = Array.from(Array(9)).map((_, index) => `${index + 1}`);
+export const ALL_NUMBERS = Array.from(Array(9)).map((_, index) => `${index + 1}`);
 
 function getSectionNumber(row: number, column: number) {
   for (let i = 0; i < SECTION_INDEXES.length; i++) {
@@ -78,8 +78,6 @@ function isGridFull(grid: TGrid) {
 export function solveGrid(grid: TGrid): TGrid | null {
   const position = getNextEmptyPosition(grid);
 
-  console.log(position);
-
   if (!position) {
     if (isGridFull(grid)) {
       return grid;
@@ -90,7 +88,6 @@ export function solveGrid(grid: TGrid): TGrid | null {
 
   for (const num of ALL_NUMBERS) {
     if (isPlacable(grid, position, num)) {
-      console.log(`placed ${num} at ${position.row},${position.col}`);
       const newGrid = structuredClone(grid);
       newGrid[position.row][position.col] = num;
 
@@ -102,4 +99,31 @@ export function solveGrid(grid: TGrid): TGrid | null {
   }
 
   return null;
+}
+
+export function isValidGrid(grid: TGrid) {
+  for (let i = 0; i < grid.length; i++) {
+    for (let j = 0; j < grid[i].length; j++) {
+      const num = grid[i][j];
+
+      if (num === "") {
+        continue;
+      }
+
+      const position = {
+        row: i,
+        col: j,
+        section: getSectionNumber(i, j),
+      };
+
+      const gridWithoutNum = structuredClone(grid);
+      gridWithoutNum[i][j] = "";
+
+      if (!isPlacable(gridWithoutNum, position, num)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
